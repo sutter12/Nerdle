@@ -10,8 +10,31 @@ def initDict():
 
     return bank
 
+def removeNum(num, bank):
+    nums = bank.get("nums")
+    nums.pop(num) #num == numIndex
+    bank["nums"] = nums
+    return bank
+
+def removeSymbol(symbol, bank):
+    if symbol == '=':
+        print("cannot remove = ")
+        return bank
+
+    symbols = bank.get("symbols")
+    for i in symbols:
+        if i == symbol:
+            symbols.remove(symbol)
+            break
+    bank["symbols"] = symbols
+    return bank
+
 def main():
-    initDict()
-    print("Hello World!")
+    bank = initDict()
+    print(str(bank) + "\n")
+    bank = removeNum(5, bank)
+    print(str(bank) + "\n")
+    bank = removeSymbol('*', bank)
+    print(str(bank) + "\n")
 
 main()
