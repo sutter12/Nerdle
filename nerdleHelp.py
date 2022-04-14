@@ -51,29 +51,112 @@ def checkEquals(guess):
     else:
         return False
 
-def compute(check):
-    symbols = ['+', '-', '*', '/']
-    tempNum = 0
+def checkColors(colors):
+    for i in colors:
+        if i != 'g' or i != 'y' or i != 'b':
+            return False
+    
+    return True
+
+def precedence(op):
+    if op == "+" or op == "-":
+        return 1
+    if op == "*" or op == "/":
+        return 2
+    return 0
+
+def applyOperation(num1, num2, op):
+    if op == "+":
+        return num1 + num2
+    if op == "-":
+        return num1 - num2
+    if op == "*":
+        return num1 * num2
+    if op == "/":
+        return num1 / num2
+
+def compute(equation):
     nums = []
-    for i in range(len(check)):
-        if i in symbols:
-            print("hi")
-
-
+    operations = []
+    i = 0
+    while i < len(equation):
+        if equation[i] == " ": # get rid of spaces in our equation
+            i += 1
+            continue
+        elif equation[i] == "(":
+            operations.append(equation[i])
+        elif equation[i].isdigit(): # get number
+            val = 0
+            while (i < len(equation)) and equation[i].isdigit():
+                val = (val*10)+int(equation[i])
+                i += 1
+            nums.append(val)
+            i -= 1
+        elif equation[i] == ")": 
+            while len(operations) != 0 and operations[-1] != "(":
+                val2 = nums.pop()
+                val1 = nums.pop()
+                op = operations.pop()
+                nums.append(applyOperation(val1, val2, op))
+            operations.append(equation[i])
+        else:
+            while ((len(operations) != 0) and precedence(operations[-1]) >= precedence(equation[i])):
+                val2 = nums.pop()
+                val1 = nums.pop()
+                op = operations.pop()
+                nums.append(applyOperation(val1, val2, op))
+            operations.append(equation[i])
+        i += 1
+    while len(operations) != 0:
+        val2 = nums.pop()
+        val1 = nums.pop()
+        op = operations.pop()
+        nums.append(applyOperation(val1, val2, op))
+    return nums[-1]
 
 def getGuess():
     valid = False
     while not valid:
-        guess = input("What is your guess")
+        guess = input("What is your guess? ")
+        
         lengthCheck = checkLength(guess)
+        if not lengthCheck:
+            print("length does not match")
         equalSign = checkEquals(guess)
+        if not equalSign:
+            print("equal sign does not match")
         computes = compute(guess)
-            
+        if not computes:
+            print("does not compute")
+        
+        if lengthCheck and equalSign and computes:
+            valid = True
+        else:
+            print("Invalid guess input please try again")    
+    
     return guess
+
+def getColors(guess):
+    colors = ""
+    valid = False
+    while not valid:
+        colors = input("What are the colors (g->green, y->yellow, b->black/gray): \n" + guess + "\n")
+        if colors == 'all':
+            print("Answer is: " + guess)
+            break
+        lengthCheck = checkLength(colors)
+        colorCheck = checkColors(colors)
+        if lengthCheck and colorCheck:
+            valid = True
+        else:
+            print("Invalid color input try again")
+    
+    return colors        
 
 def main():
     bank = initDict()
     print(str(bank) + "\n")
-    print(getGuess())
+    guess = getGuess()
+    getColors(guess)
 
 main()
