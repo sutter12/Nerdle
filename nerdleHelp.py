@@ -6,6 +6,7 @@ def initDict():
     bank = {
         "nums": [0,1,2,3,4,5,6,7,8,9],
         "symbols": ['+', '-', '*', '/', '='],
+        "correct": ['', '', '', '', '', '', '', '']
     }
 
     return bank
@@ -75,7 +76,7 @@ def applyOperation(num1, num2, op):
     if op == "/":
         return num1 / num2
 
-def compute(equation):
+def calculate(equation):
     nums = []
     operations = []
     i = 0
@@ -113,6 +114,24 @@ def compute(equation):
         op = operations.pop()
         nums.append(applyOperation(val1, val2, op))
     return nums[-1]
+
+def compute(guess):
+    # print(guess)
+    equation = ""
+    answer = ""
+    for i in range(len(guess)): #seperate guess at =
+        if guess[i] == '=':
+            equation = guess[:i]
+            answer = guess[i+1:]
+            break
+    
+    answer = int(answer)
+    equationResult = calculate(equation)
+
+    if answer == equationResult:
+        return True
+    else:
+        return False
 
 def getGuess():
     valid = False
@@ -153,10 +172,42 @@ def getColors(guess):
     
     return colors        
 
+def green(value, bank, i):
+    correct = bank["correct"]
+    correct[i] = value
+    bank["correct"] = correct
+    
+    return bank
+
+def yellow(value, bank, i):
+    print("yellow not done yet")
+
+def black(value, bank):
+    symbols = ['+', '-', '*', '/', '=']
+    digits = [0,1,2,3,4,5,6,7,8,9]
+
+    if value in symbols:
+        removeSymbol(value, bank)
+
+def getPossible(bank, guess, colors):
+    for i in range(8):
+        value = guess[i]
+        color = colors[i]
+
+        if color == 'g':
+            green(value, bank, i)
+        elif color == 'y':
+            yellow(value, bank, i)
+        elif color == 'b':
+            black(value, bank)
+        else:
+            print("error in sorting values and their colors")
+
 def main():
     bank = initDict()
     print(str(bank) + "\n")
     guess = getGuess()
-    getColors(guess)
+    colors = getColors(guess)
+    bank = getPossible(bank, guess, colors)
 
 main()
