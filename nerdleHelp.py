@@ -13,8 +13,11 @@ def initDict():
 
 def removeNum(num, bank):
     nums = bank.get("nums")
-    nums.pop(num) #num == numIndex
-    bank["nums"] = nums
+    if num in nums:
+        nums.pop(num) #num == numIndex
+        bank["nums"] = nums
+    else:
+        print("number already removed")
     return bank
 
 def removeSymbol(symbol, bank):
@@ -23,11 +26,14 @@ def removeSymbol(symbol, bank):
         return bank
 
     symbols = bank.get("symbols")
-    for i in symbols:
-        if i == symbol:
-            symbols.remove(symbol)
-            break
-    bank["symbols"] = symbols
+    if symbol in symbols:
+        for i in symbols:
+            if i == symbol:
+                symbols.remove(symbol)
+                break
+        bank["symbols"] = symbols
+    else:
+        print("symbol already removed")
     return bank
 
 def checkLength(guess):
@@ -55,6 +61,7 @@ def checkEquals(guess):
 def checkColors(colors):
     for i in colors:
         if i != 'g' or i != 'y' or i != 'b':
+            print(colors, i)
             return False
     
     return True
@@ -164,7 +171,11 @@ def getColors(guess):
             print("Answer is: " + guess)
             break
         lengthCheck = checkLength(colors)
+        if not lengthCheck:
+            print("length of colors input is not correct")
         colorCheck = checkColors(colors)
+        if not colorCheck:
+            print("incorrect color input")
         if lengthCheck and colorCheck:
             valid = True
         else:
@@ -187,7 +198,11 @@ def black(value, bank):
     digits = [0,1,2,3,4,5,6,7,8,9]
 
     if value in symbols:
-        removeSymbol(value, bank)
+        bank = removeSymbol(value, bank)
+    elif value in digits:
+        bank = removeNum(value, bank)
+    
+    return bank
 
 def getPossible(bank, guess, colors):
     for i in range(8):
@@ -195,11 +210,11 @@ def getPossible(bank, guess, colors):
         color = colors[i]
 
         if color == 'g':
-            green(value, bank, i)
+            bank = green(value, bank, i)
         elif color == 'y':
-            yellow(value, bank, i)
+            bank = yellow(value, bank, i)
         elif color == 'b':
-            black(value, bank)
+            bank = black(value, bank)
         else:
             print("error in sorting values and their colors")
 
@@ -209,5 +224,6 @@ def main():
     guess = getGuess()
     colors = getColors(guess)
     bank = getPossible(bank, guess, colors)
+    print(bank)
 
 main()
